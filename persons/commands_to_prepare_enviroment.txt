@@ -1,0 +1,37 @@
+gcloud beta dataproc clusters create big-data-pb \
+--enable-component-gateway --bucket big-data-pb \
+--region europe-west3 --subnet default --zone europe-west3-c \
+--master-machine-type n1-standard-2 --master-boot-disk-size 50 \
+--num-workers 2 \
+--worker-machine-type n1-standard-2 --worker-boot-disk-size 50 \
+--image-version 1.3-deb9 \
+--optional-components ANACONDA,JUPYTER,ZEPPELIN \
+--project bigdta --max-age=1h
+
+mkdir -p labs/project/persons
+cd labs/project/persons
+gsutil cp gs://big-data-pb/labs/project/name.basics.tsv .
+gsutil cp gs://big-data-pb/labs/project/title.principals.tsv .
+gsutil cp gs://big-data-pb/labs/project/script.sql .
+gsutil cp gs://big-data-pb/labs/project/script.sh .
+gsutil cp gs://big-data-pb/labs/project/*.py .
+
+hadoop fs -mkdir -p /user/132197/labs/project/persons/input
+hadoop fs -copyFromLocal titles.tsv /user/132197/labs/project/persons/input/
+hadoop fs -copyFromLocal names.tsv /user/132197/labs/project/persons/input/
+hadoop fs -ls /user/132197/labs/project/persons/input/
+
+hadoop fs -rm -r /user/132197/labs/project/persons/st_output
+
+
+hadoop jar /usr/lib/hadoop-mapreduce/hadoop-streaming.jar \
+	-files persons_mapper.py,persons_reducer.py \
+	-mapper persons_mapper.py \
+	-combiner persons_reducer.py \
+	-reducer persons_reducer.py \
+	-input /user/132197/labs/project/persons/input/titles.tsv \
+	-output /user/132197/labs/project/persons/st_output
+
+hadoop fs -cp /user/132197/labs/project/persons/st_output/part-* /user/132197/labs/project/persons/input/
+
+beeline -n pawelbubak97 -u jdbc:hive2://localhost:10000/default
