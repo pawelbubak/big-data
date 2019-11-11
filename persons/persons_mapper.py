@@ -10,5 +10,3 @@ for line in sys.stdin:
                 print("%s\t%d\t%d" % (columns[2], 1, 0))
         elif columns[3] == "director":
                 print("%s\t%d\t%d" % (columns[2], 0, 1))
-        elif columns[3]:
-                print("%s\t%d\t%d" % (columns[2], 0, 0))

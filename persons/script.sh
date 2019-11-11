@@ -9,7 +9,6 @@ mkdir 132197_out
 hadoop fs -mkdir -p /user/132197/labs/project/persons/input
 hadoop fs -copyFromLocal title.principals.tsv /user/132197/labs/project/persons/input/
 hadoop fs -copyFromLocal name.basics.tsv /user/132197/labs/project/persons/input/
-hadoop fs -ls /user/132197/labs/project/persons/input/
 
 hadoop jar /usr/lib/hadoop-mapreduce/hadoop-streaming.jar \
 	-files persons_mapper.py,persons_reducer.py \
@@ -18,9 +17,6 @@ hadoop jar /usr/lib/hadoop-mapreduce/hadoop-streaming.jar \
 	-reducer persons_reducer.py \
 	-input /user/132197/labs/project/persons/input/title.principals.tsv \
 	-output /user/132197/labs/project/persons/st_output
-
-hadoop fs -ls /user/132197/labs/project/persons/st_output/
-hadoop fs -cp /user/132197/labs/project/persons/st_output/part-* /user/132197/labs/project/persons/input/
 
 hive -f script.sql
 

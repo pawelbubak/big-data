@@ -3,28 +3,24 @@ use persons;
 
 ADD JAR /usr/lib/hive/lib/hive-hcatalog-core.jar;
 
-drop table if exists persons_sf;
-drop table if exists names_sf;
-drop table if exists persons_orc;
-drop table if exists names_orc;
 drop table if exists result;
 
-create table persons_sf(nconst string, actor int, director int)
+create temporary table persons_sf(nconst string, actor int, director int)
   ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' STORED AS TEXTFILE;
-create table names_sf(nconst string, primaryName string, birthYear string,
+create temporary table names_sf(nconst string, primaryName string, birthYear string,
   deathYear string, primaryProfession ARRAY<string>, knownForTitles ARRAY<string>)
   ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
   COLLECTION ITEMS TERMINATED by ',' STORED AS TEXTFILE;
-create table persons_orc(nconst string, actor int, director int)
+create temporary table persons_orc(nconst string, actor int, director int)
   STORED AS ORC;
-create table names_orc(nconst string, primaryName string, birthYear string,
+create temporary table names_orc(nconst string, primaryName string, birthYear string,
   deathYear string, primaryProfession ARRAY<string>, knownForTitles ARRAY<string>)
   STORED AS ORC;
 create external table if not exists result(primaryName string, role string, movies int)
   ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe' STORED AS TEXTFILE
   LOCATION '/user/132197/labs/project/persons/output/';
 
-load data inpath '/user/132197/labs/project/persons/input/part-*' into table persons_sf;
+load data inpath '/user/132197/labs/project/persons/st_output/part-*' into table persons_sf;
 load data inpath '/user/132197/labs/project/persons/input/name.basics.tsv' into table names_sf;
 
 insert into persons_orc select * from persons_sf where nconst != 'nconst';

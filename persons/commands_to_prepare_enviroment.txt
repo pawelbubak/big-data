@@ -12,8 +12,7 @@ mkdir -p labs/project/persons
 cd labs/project/persons
 gsutil cp gs://big-data-pb/labs/project/name.basics.tsv .
 gsutil cp gs://big-data-pb/labs/project/title.principals.tsv .
-gsutil cp gs://big-data-pb/labs/project/script.sql .
-gsutil cp gs://big-data-pb/labs/project/script.sh .
+gsutil cp gs://big-data-pb/labs/project/script* .
 gsutil cp gs://big-data-pb/labs/project/*.py .
 
 hadoop fs -mkdir -p /user/132197/labs/project/persons/input
